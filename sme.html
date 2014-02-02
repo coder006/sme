@@ -1,0 +1,308 @@
+<html style="overflow-x: hidden;">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+	<script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	<link href='//fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(init);
+      function init() {
+        var options = {
+                pointSize: 5,
+                colors: ['#2FAB33'],
+                curveType:'function',
+                animation:{
+                        duration:1460 ,
+                        easing: 'linear',
+                },
+        hAxis: {viewWindow: {min:[1,0,0,0], max:[1,0,49,3]}, title: 'Time of day(hh:mm:ss)'},
+        vAxis: {minValue:0, maxValue:12 , title: 'Current(A)'}
+        };
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('timeofday', 'Title');
+        data.addColumn('number', 'Current');
+        data.addRow([[1,0,0,0], 2]);
+        data.addRow([[1,0,7,2], 2.3]);
+        data.addRow([[1,0,14,4], 1.7]);
+        data.addRow([[1,0,21,0], 3]);
+        data.addRow([[1,0,28,2], 4]);
+        data.addRow([[1,0,35,4], 1.2]);
+        data.addRow([[1,0,42,0], 5]);
+        data.addRow([[1,0,49,2], 2.5]);
+        data.addRow([[1,0,56,4], 3]);
+
+        var chart = new google.visualization.LineChart(document.getElementById('visualization'));
+
+        function drawChart() {
+                options['title'] = 'Current Fluctuations'; // If current is 1 then change title to August
+                chart.draw(data, options);
+        }
+
+        var hr = 1,min = 0,sec = 56,millsec = 30;
+
+        var appendBuf = setInterval(function(){appendBuffer()},500);
+        var drawChart = setInterval(function(){continuousGraph()},1500);
+        var drawChart = setInterval(function(){continuousGraph()},10000);
+
+        function appendBuffer() {
+        	sec = sec + 27;
+        	if(sec>=60){
+        		sec=0;
+        		min = min+1;
+        	}
+        	if(min>=60){
+        		min=0;
+        		hr = hr+1;
+        	}
+        	if(hr>=24){
+        		hr = 0;
+        	}
+        	data.addRow([[hr,min,sec,millsec],Math.floor(Math.random()*11)]);
+        }
+        function continuousGraph(){
+        	console.log(options.hAxis.viewWindow.min);
+        }
+    }
+    </script>
+	<title>UbiPlug</title>
+	<script type="text/javascript">
+		$(function(){
+			$('#menu').menu();
+			$('#accordion').accordion({
+				collapsible: true,
+				heightStyle: "content"
+			});
+
+		});
+		$(document).ready(function(){
+			$("#logout").click(function(){
+				window.location = "https://ubiplug.com/sme/";
+			});
+			$(".devices").click(function(event){
+				id = event.target.id;
+				console.log(id);
+				src = "images/machine"+id+".jpg"
+				data = {'id':id}
+				console.log(data);
+				$.ajax({
+					type:"POST",
+					url:"http://www.ubiplug.com:8080/sme/get/device/",
+					data:data,
+					success: function(data){
+						console.log(data.voltage);
+						for (var i in data.current_surges) {
+    						var counter = data.current_surges[i];
+    						console.log(counter);
+						}
+						document.getElementById('voltage').innerHTML = data.voltage;
+						document.getElementById('model').innerHTML = data.model;
+						document.getElementById('machine').innerHTML = data.device_name;
+						document.getElementById('current').innerHTML = data.current_value;
+						document.getElementById('health').innerHTML = data.heath;
+						document.getElementById('ratedcurrent').innerHTML = data.rated_current_consumption;
+						document.getElementById('lasttested').innerHTML = data.last_tested;
+						console.log(src);
+						$('#deviceimage').attr('src',src);
+						var a = document.getElementById('deviceimage').src;
+						console.log(a);
+					},
+					dataType: 'json'
+
+				});
+			});
+		});
+		
+
+		
+	</script>
+	
+	<style type="text/css">
+		#.ui-menu-header.ui-state-active{
+			background: #4B4D53;
+		}
+		.ui-accordion-header{
+			background:#61636A;
+		}
+		#accordion h3{
+			color:#fff;
+		}
+		.ui-accordion-header.ui-state-active { background: #4B4D53; }
+		ul
+		{
+			list-style-type: none;
+		  }
+		  /*
+		.sessions td{
+			font-size: 90%;
+		}
+		.sessions th, .sessions tr{
+			border-top: hidden;
+		}*/
+		.sessions p{
+			text-align:center;
+		}
+		.ui-menu { width: 200px; }
+		#menu ul, #menu ul li{
+			z-index:1000;
+		}
+		*{
+			font-family: 'Roboto Slab', serif;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="row" style="">
+
+		<div class="col-xs-10 col-sm-10 col-md-10 ">
+			<img src="images/logo.png" style="width:50%;left:2%;position:relative;">
+		</div>
+		<div class="col-xs-2 col-sm-2 col-md-2">
+			<h4 id="logout" style="font-size:150%;"><button>Logout</button></h4>
+		</div>
+	</div>
+
+
+
+	<div class="row" style="background-color:#4B4D53;">
+		<div class="col-xs-8 col-sm-8 col-md-8" >
+			<h2 style="position:relative;left:3%;color:#fff;">Rajesh Industries</h2>
+		</div>
+		<!--<div class="col-xs-2 col-sm-2 col-md-2" style="z-index:1000;"></div>-->
+		<div id="menu" class="col-xs-2 col-sm-2 col-md-2" style="margin-top:1.3%;">
+			<li>
+		    	<a href="#">Select Device</a>
+		    	<ul>
+		      		<li><a href="#" id="1" class="devices">Motor</a></li>
+		      		<li><a href="#" id="2" class="devices">Lathe</a></li>
+		    	</ul>
+			</li>
+		</div>
+	</div>
+
+
+
+	<div class="row">
+
+
+		<div class="col-sm-3 col-sm-3 col-md-3 col-xl-3" >
+			<img src="images/machine1.jpg" style="width:100%;position:relative;margin-top:15%;margin-left:5%;" id="deviceimage">
+		</div>
+
+
+		<div class="col-sm-4 col-sm-4 col-md-4 col-xl-4">
+			<h3 align="left" style="float:left;top:0%;position:relative;font-size:160%;"><strong>Device Details :</strong></h3>
+			<br>
+			<table class="table table-striped table-bordered table-condensed" style="">
+  				<tr>
+  					<td>Machine Detected</td>
+  					<td id="machine">Motor Machine</td>
+  				</tr>
+  				<tr>
+  					<td>Model</td>
+  					<td id="model">90WC-12L</td>
+  				</tr>
+  				<tr>
+  					<td>Current Value</td>
+  					<td id="current">310 mA</td>
+  				</tr>
+  				<tr>
+  					<td>Voltage</td>
+  					<td id="voltage">230 V</td>
+  				</tr>
+  				<tr>
+  					<td>Rated Current Consumption</td>
+  					<td id="ratedcurrent">280 mA</td>
+  				</tr>
+  				<tr>
+  					<td>Health</td>
+  					<td id="health">90%</td>
+  				</tr>
+  				<tr>
+  					<td>Last Tested</td>
+  					<td id="lasttested">15 Jan 2014</td>
+  				</tr>
+			</table>
+		</div>
+
+
+		<div class="col-xs-1 col-sm-1 col-md-1"></div>
+
+
+		<div class="col-xs-3 col-sm-3 col-md-3" style="margin-top:1.0%;z-index:100;background-color:#F7F8E0" >
+        	<h3 style="margin-top:0%;position:relative;top:0%;"><u>Recent Incidents</u></h3>
+            <br>
+			<h4 style="margin-top:0%;position:relative;top:0%;">Under Voltage</h4>
+			<div class="sessions" style="position:relative;margin-top:1%;background-color:#F7F8E0;">
+				<p>3:00 - 4:00 p.m. Jan 25 2014</p>
+				<p>3:30 - 4:35 p.m. Jan 23 2014</p>
+			</div>
+			<h4 style="margin-top:0%;position:relative;top:0%;">Current Surges</h4>
+			<div class="sessions" style="position:relative;margin-top:1%;background-color:#F7F8E0;">
+				<p>8:00 - 9:00 a.m. Jan 20 2014</p>
+				<p>3:30 - 4:35 p.m. Jan 23 2014</p>
+			</div>
+			<h4 style="margin-top:0%;position:relative;top:0%;">Overloading</h4>
+			<table class="table sessions" style="position:relative;margin-top:1%;background-color:#F7F8E0;">
+				<tr>
+					<td>No such incidents recorded.</td>
+				</tr>
+			</table>
+		</div>
+
+
+		<div class="clo-xs-1 col-sm-1 col-md-1"></div>
+	</div>
+
+
+
+
+	<div class="row">
+		<div class="col-xs-1 col-sm-1 col-md-1"></div>
+
+
+		<div class="col-xs-10 col-sm-10 col-md-10" id="accordion" style="margin-top:4%;padding-bottom:5%;"> 
+			<h3>Current Data</h3>
+			<div>
+			<div id="visualization" style="width: 100%; height: 70%;"></div>
+			</div>
+			<h3>Power Data</h3>
+			<div>
+			<p>
+			Sed non urna. Donec et ante. Phasellus eu ligula. Vestibulum sit amet
+			purus. Vivamus hendrerit, dolor at aliquet laoreet, mauris turpis porttitor
+			velit, faucibus interdum tellus libero ac justo. Vivamus non quam. In
+			suscipit faucibus urna.
+			</p>
+			</div>
+			<h3>Efficiency</h3>
+			<div>
+			<p>
+			Nam enim risus, molestie et, porta ac, aliquam ac, risus. Quisque lobortis.
+			Phasellus pellentesque purus in massa. Aenean in pede. Phasellus ac libero
+			ac tellus pellentesque semper. Sed ac felis. Sed commodo, magna quis
+			lacinia ornare, quam ante aliquam nisi, eu iaculis leo purus venenatis dui.
+			</p>
+			<ul>
+			  <li>List item one</li>
+			  <li>List item two</li>
+			  <li>List item three</li>
+			</ul>
+			</div>
+		</div>
+
+
+		<div class="col-xs-1 col-sm-1 col-md-1"></div>
+	</div>
+	
+	<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+</body>
+</html>

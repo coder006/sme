@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap-theme.min.css">
+	<link href="css/signin.css" rel="stylesheet">
+	<link href='//fonts.googleapis.com/css?family=Roboto+Slab' rel='stylesheet' type='text/css'>
+	<script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+	<script src="js/index.js"></script>
+	<!--<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>-->
+	<script type="text/javascript">
+		function login(){
+			window.location = '/sme/sme.html';
+			return false;
+		}
+	</script>
+	<style type="text/css">
+	*{
+		font-family: 'Roboto Slab', serif;
+	}
+	</style>
+	<title>Ubiplug</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+	<div class="container">
+
+      <form class="form-signin" role="form">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <input type="text" class="form-control" placeholder="Username" id="uname" name="uname" required autofocus>
+        <input type="password" class="form-control" placeholder="Password" id="pass" required>
+        <label class="checkbox">
+          <input type="checkbox" value="remember-me"> Remember me
+        </label>
+        <button id="loginbutton" class="btn btn-lg btn-primary btn-block" type="submit" onclick="return false">Sign in</button>
+      </form>
+
+    </div>
+</body>
+</html>
